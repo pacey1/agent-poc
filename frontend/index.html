@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Confluence Agent Chat</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 0; background: #f6f7fb; }
+      .wrap { max-width: 860px; margin: 32px auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,.08); padding: 20px; }
+      .chat { height: 420px; overflow-y: auto; border: 1px solid #e3e6ef; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+      .msg { margin: 8px 0; padding: 10px 12px; border-radius: 8px; }
+      .user { background: #e8f1ff; text-align: right; }
+      .bot { background: #f0f2f7; }
+      .row { display: flex; gap: 8px; }
+      input { flex: 1; padding: 12px; border: 1px solid #cfd6e6; border-radius: 8px; }
+      button { padding: 12px 14px; border: 0; border-radius: 8px; background: #0b5fff; color: white; cursor: pointer; }
+      .hint { color: #667; font-size: 13px; margin-top: 8px; }
+      pre { background: #111827; color: #e5e7eb; padding: 10px; border-radius: 8px; overflow-x: auto; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h2>Confluence Agent (MVP)</h2>
+      <div id="chat" class="chat"></div>
+      <div class="row">
+        <input id="input" placeholder="예: 내 권한으로 조회 가능한 공간 목록 보여줘" />
+        <button id="send">전송</button>
+      </div>
+      <div class="hint">예시: "A 공간에 B 페이지 생성해줘"</div>
+    </div>
+
+    <script>
+      const chatEl = document.getElementById('chat');
+      const inputEl = document.getElementById('input');
+      const sendEl = document.getElementById('send');
+
+      function append(type, text) {
+        const div = document.createElement('div');
+        div.className = `msg ${type}`;
+        div.innerHTML = text;
+        chatEl.appendChild(div);
+        chatEl.scrollTop = chatEl.scrollHeight;
+      }
+
+      async function send() {
+        const message = inputEl.value.trim();
+        if (!message) return;
+
+        append('user', message);
+        inputEl.value = '';
+
+        try {
+          const res = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message })
+          });
+          const data = await res.json();
+          append('bot', `${data.reply}<pre>${JSON.stringify(data.action, null, 2)}</pre>`);
+        } catch (error) {
+          append('bot', `에러가 발생했습니다: ${error.message}`);
+        }
+      }
+
+      sendEl.addEventListener('click', send);
+      inputEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') send();
+      });
+    </script>
+  </body>
+</html>
