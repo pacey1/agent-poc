@@ -15,15 +15,6 @@
 python -m venv .venv
 source .venv/bin/activate
 pip install -e .
-cp .env.example .env
-# .env 파일에서 최소 아래 값만 먼저 채우세요
-# - LLM_PROVIDER (grok 또는 openai)
-# - GROK_API_KEY 또는 OPENAI_API_KEY
-# - 실제 연동 시 MOCK_MODE=false + MCP URL들
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-
 ## 환경변수
 - 공통 LLM
   - `LLM_PROVIDER=grok|openai`
