@@ -9,14 +9,12 @@
 - Tool 별 에이전트(`ConfluenceToolAgent`, `JiraToolAgent`, `GitHubToolAgent`) 분리
 - 오케스트레이션을 **LangGraph** 기반으로 변경
 
-## 실행
+
+## 빠른 시작 (.env 세팅 포함)
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -e .
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
 ## 환경변수
 - 공통 LLM
   - `LLM_PROVIDER=grok|openai`
